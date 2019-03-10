@@ -1,7 +1,8 @@
 /*
- * Create a list that holds all of your cards
+ * Create a list that holds all of your cards.
+ * Cards are represented by their font-awesome's classname for efficiency
  */
-
+let cardListArray = ['fa-anchor', 'fa-anchor', 'fa-bicycle', 'fa-bicycle', 'fa-bomb', 'fa-bomb', 'fa-bolt', 'fa-bolt', 'fa-cube', 'fa-cube', 'fa-diamond', 'fa-diamond', 'fa-leaf', 'fa-leaf', 'fa-paper-plane-o', 'fa-paper-plane-o'];
 
 /*
  * Display the cards on the page
@@ -25,6 +26,39 @@ function shuffle(array) {
     return array;
 }
 
+// Create a new individual card (as a list item) with an i child element with the class name representing its image
+function createCard(className) {
+    let newCard = document.createElement('li'); // create a list item to be used as a new card
+    let newImage = document.createElement('i'); // create the card image based on className 
+    newCard.classList.add('card');
+    newCard.classList.add('open'); // !DEBUG
+    newCard.classList.add('show'); // !DEBUG
+    newImage.classList.add('fa');
+    newImage.classList.add(className);
+    newCard.appendChild(newImage);
+
+    return newCard;
+}
+
+// Load a brand new game matrix with shuffled decks of cards
+function loadNewGame(cardListArray) {
+    shuffle(cardListArray);  // shuffle the cards
+    let gameDeck = document.querySelector('.deck');
+
+    const newCardListFragment = document.createDocumentFragment();  // create fragment
+
+    for (let i = 0; i < 16; i++) {
+        //let newCard = document.createElement('li'); // create a list item to be used as a new card
+        //newCard.classList.add(cardListArray[i]);    // add class name to it to determine its card image
+        let newCard = createCard(cardListArray[i]);
+        newCardListFragment.appendChild(newCard);
+    }
+
+    gameDeck.appendChild(newCardListFragment);
+
+}
+
+loadNewGame(cardListArray);
 
 /*
  * set up the event listener for a card. If a card is clicked:
