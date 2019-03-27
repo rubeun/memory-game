@@ -148,7 +148,11 @@ function resetMoves() {
 }
 
 function compareOpenCards(lastCardIndex, nextCardIndex) {
-return cardListArray[lastCardIndex] === cardListArray[nextCardIndex] ? true : false; 
+    return cardListArray[lastCardIndex] === cardListArray[nextCardIndex] ? true : false; 
+}
+
+function isClickedCardAlreadyOpen(clickedCardIndex) {
+    return openCardIndexes.indexOf(clickedCardIndex) !== -1 ? true : false;
 }
 
 function wonGame() {
@@ -192,15 +196,21 @@ document.querySelector('.deck').addEventListener('click', function(e) {
     let clickedCardIndex = clickedCard.getAttribute('data-card-index');
 
     if ((clickedCard.nodeName === 'LI') && (openCardIndexes.length < 15)) { 
-        incrementMoves();
-        openCard(clickedCard, clickedCardIndex);
+        
+        if (!isClickedCardAlreadyOpen(clickedCardIndex)) {
+            incrementMoves();
+            openCard(clickedCard, clickedCardIndex);    
+        }
 
     } else if ((clickedCard.nodeName === 'LI') && (openCardIndexes.length === 15)) { // Last card & Game Win
-        incrementMoves();
-        displayCard(clickedCard);
-        setTimeout(function() {
-            wonGame();
-        }, 1000);
+
+        if (!isClickedCardAlreadyOpen(clickedCardIndex)) {
+            incrementMoves();
+            displayCard(clickedCard);
+            setTimeout(function() {
+                wonGame();
+            }, 1000);
+        }
     }
 })
 
