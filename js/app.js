@@ -4,12 +4,18 @@
  * Keep tabs of which cards have been opened
  * Counter for number of total moves and number of wrong moves
  */
+
+const WRONG_MOVE_3_STAR_LIMIT = 26;
+const WRONG_MOVE_2_STAR_LIMIT = 34;
+const WRONG_MOVE_1_STAR_LIMIT = 42;
+
 let cardListArray = ['fa-anchor', 'fa-anchor', 'fa-bicycle', 'fa-bicycle', 'fa-bomb', 'fa-bomb', 'fa-bolt', 'fa-bolt', 'fa-cube', 'fa-cube', 'fa-diamond', 'fa-diamond', 'fa-leaf', 'fa-leaf', 'fa-paper-plane-o', 'fa-paper-plane-o'];
 let openCardIndexes = [];
 let lastCardIndex = null;
 let currentCardIndex = null;
 let moveCount = 0;
 let wrongMoves = 0;
+let bestMoves = null;
 
 /*
  * Display the cards on the page
@@ -50,6 +56,14 @@ function createCard(className, cardIndex) {
 function loadNewGame() {
     shuffle(cardListArray);  // shuffle the cards
     
+    document.querySelector(".deck").setAttribute("style", "display: flex");
+    document.querySelector(".scoreboard").setAttribute("style", "display: none");
+
+    // TESTING
+    //document.querySelector(".deck").setAttribute("style", "display: none");
+    //document.querySelector(".scoreboard").setAttribute("style", "display: block");
+
+
     let gameDeck = document.querySelector('.deck');
     gameDeck.innerHTML = ""; // reset to empty list again
     const newCardListFragment = document.createDocumentFragment();  // create fragment
@@ -127,6 +141,9 @@ function incrementMoves() {
 function resetMoves() {
     moveCount = 0;
     wrongMoves = 0;
+    openCardIndexes = [];
+    lastCardIndex = null;
+    currentCardIndex = null;
     document.querySelector('.moves').innerHTML = moveCount;
 }
 
@@ -134,45 +151,52 @@ function compareOpenCards(lastCardIndex, nextCardIndex) {
 return cardListArray[lastCardIndex] === cardListArray[nextCardIndex] ? true : false; 
 }
 
+function wonGame() {
+    let gameDeck = document.querySelector('.deck');
+    gameDeck.innerHTML = ""; // reset to empty list again
+
+    document.querySelector(".deck").setAttribute("style", "display: none");
+    document.querySelector(".scoreboard").setAttribute("style", "display: block");
+    
+    if (bestMoves !== null) {
+        moveCount < bestMoves ? bestMoves = moveCount : null // update best score if better
+    } else {
+        bestMoves = moveCount;
+    }
+
+    document.querySelector('#total-moves').innerHTML = moveCount;
+    document.querySelector('#best-moves').innerHTML = bestMoves;
+}
 
  // Card click listener
 document.querySelector('.deck').addEventListener('click', function(e) {
-    console.log(e);
-    incrementMoves();
 
-    if (openCardIndexes.length === 16) { // All cards opened - End Game
+    if ((e.target.nodeName === 'LI') && (openCardIndexes.length < 15)) {
+        incrementMoves();
 
-    } else if (openCardIndexes.length % 2 === 0) { // First card not open yet
-        displayCard(e.target);
-        lastCardIndex = e.target.getAttribute('data-card-index');
-        openCardIndexes.push(lastCardIndex);
-        console.log(openCardIndexes);
-    } else if (openCardIndexes.length % 2 === 1) { // First card opened
-        currentCardIndex = e.target.getAttribute('data-card-index');
-        displayCard(e.target);
-        if (compareOpenCards(lastCardIndex, currentCardIndex)) { // Matched!
-            rightCards(lastCardIndex, currentCardIndex);
-            openCardIndexes.push(currentCardIndex);
-            console.log(openCardIndexes);
-        } else { // Not a Match
-            wrongCards(lastCardIndex, currentCardIndex);
-            openCardIndexes.pop();
-            console.log(openCardIndexes);
-        }
-    } else if (openCardIndexes.length < 16) { // More than 3 cards open
-        displayCard(e.target);
-        if (compareOpenCards(openCardIndexes[openCardIndexes.length - 1], e.target.getAttribute('data-card-index'))) { // Matched!
-            rightCards(lastCardIndex, currentCardIndex);
-            openCardIndexes.push(e.target.getAttribute('data-card-index'));
-            console.log(openCardIndexes);
-        } else { // Not a Match
-            wrongCards(lastCardIndex, currentCardIndex);
-            openCardIndexes.pop();
-            console.log(openCardIndexes);
-        }
+        if (openCardIndexes.length === 16) { // All cards opened - End Game
 
+        } else if (openCardIndexes.length % 2 === 0) { // First card not open yet
+            displayCard(e.target);
+            lastCardIndex = e.target.getAttribute('data-card-index');
+            openCardIndexes.push(lastCardIndex);
+            console.log(openCardIndexes);
+        } else if (openCardIndexes.length % 2 === 1) { // First card opened
+            currentCardIndex = e.target.getAttribute('data-card-index');
+            displayCard(e.target);
+            if (compareOpenCards(lastCardIndex, currentCardIndex)) { // Matched!
+                rightCards(lastCardIndex, currentCardIndex);
+                openCardIndexes.push(currentCardIndex);
+                console.log(openCardIndexes);
+            } else { // Not a Match
+                wrongCards(lastCardIndex, currentCardIndex);
+                openCardIndexes.pop();
+                console.log(openCardIndexes);
+            }
+        } 
+    } else if ((e.target.nodeName === 'LI') && (openCardIndexes.length === 15)) {
+        wonGame();
     }
-
 })
 
 // Restart Game
