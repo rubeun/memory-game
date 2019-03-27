@@ -1,8 +1,15 @@
 /*
  * Create a list that holds all of your cards.
  * Cards are represented by their font-awesome's classname for efficiency
+ * Keep tabs of which cards have been opened
+ * Counter for number of total moves and number of wrong moves
  */
 let cardListArray = ['fa-anchor', 'fa-anchor', 'fa-bicycle', 'fa-bicycle', 'fa-bomb', 'fa-bomb', 'fa-bolt', 'fa-bolt', 'fa-cube', 'fa-cube', 'fa-diamond', 'fa-diamond', 'fa-leaf', 'fa-leaf', 'fa-paper-plane-o', 'fa-paper-plane-o'];
+let openCardIndexes = [];
+let lastCardIndex = null;
+let currentCardIndex = null;
+let moveCount = 0;
+let wrongMoves = 0;
 
 /*
  * Display the cards on the page
@@ -27,12 +34,11 @@ function shuffle(array) {
 }
 
 // Create a new individual card (as a list item) with an i child element with the class name representing its image
-function createCard(className) {
+function createCard(className, cardIndex) {
     let newCard = document.createElement('li'); // create a list item to be used as a new card
     let newImage = document.createElement('i'); // create the card image based on className 
     newCard.classList.add('card');
-    newCard.classList.add('open'); // !DEBUG
-    newCard.classList.add('show'); // !DEBUG
+    newCard.setAttribute('data-card-index', cardIndex); // create a reference to classname for matching purposes
     newImage.classList.add('fa');
     newImage.classList.add(className);
     newCard.appendChild(newImage);
@@ -41,16 +47,17 @@ function createCard(className) {
 }
 
 // Load a brand new game matrix with shuffled decks of cards
-function loadNewGame(cardListArray) {
+function loadNewGame() {
     shuffle(cardListArray);  // shuffle the cards
+    
     let gameDeck = document.querySelector('.deck');
-
+    gameDeck.innerHTML = ""; // reset to empty list again
     const newCardListFragment = document.createDocumentFragment();  // create fragment
 
     for (let i = 0; i < 16; i++) {
         //let newCard = document.createElement('li'); // create a list item to be used as a new card
         //newCard.classList.add(cardListArray[i]);    // add class name to it to determine its card image
-        let newCard = createCard(cardListArray[i]);
+        let newCard = createCard(cardListArray[i], i);
         newCardListFragment.appendChild(newCard);
     }
 
@@ -58,7 +65,7 @@ function loadNewGame(cardListArray) {
 
 }
 
-loadNewGame(cardListArray);
+loadNewGame();
 
 /*
  * set up the event listener for a card. If a card is clicked:
@@ -70,3 +77,106 @@ loadNewGame(cardListArray);
  *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
  *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
  */
+
+function displayCard(cardTarget) {
+    if (cardTarget.nodeName === 'LI') {
+        cardTarget.classList.add('open');
+        cardTarget.classList.add('show');
+    }
+}
+
+function rightCards(lastCardIndex, currentCardIndex) {
+    let lastCard = document.querySelector('li[data-card-index="' + lastCardIndex + '"]');
+    let currentCard = document.querySelector('li[data-card-index="' + currentCardIndex + '"]');
+
+    lastCard.classList.add('match');
+    currentCard.classList.add('match');
+
+    setTimeout(function(){
+        lastCard.classList.remove('match');
+        currentCard.classList.remove('match');
+    
+    }, 2000);
+
+}
+
+function wrongCards(lastCardIndex, currentCardIndex) {
+    let lastCard = document.querySelector('li[data-card-index="' + lastCardIndex + '"]');
+    let currentCard = document.querySelector('li[data-card-index="' + currentCardIndex + '"]');
+
+    lastCard.classList.add('wrong');
+    currentCard.classList.add('wrong');
+
+    setTimeout(function(){
+        lastCard.classList.remove('open');
+        lastCard.classList.remove('show');
+        lastCard.classList.remove('wrong');
+        currentCard.classList.remove('open');
+        currentCard.classList.remove('show');
+        currentCard.classList.remove('wrong');
+    
+    }, 2000);
+
+}
+
+function incrementMoves() {
+    moveCount++;
+    document.querySelector('.moves').innerHTML = moveCount;
+}
+
+function resetMoves() {
+    moveCount = 0;
+    wrongMoves = 0;
+    document.querySelector('.moves').innerHTML = moveCount;
+}
+
+function compareOpenCards(lastCardIndex, nextCardIndex) {
+return cardListArray[lastCardIndex] === cardListArray[nextCardIndex] ? true : false; 
+}
+
+
+ // Card click listener
+document.querySelector('.deck').addEventListener('click', function(e) {
+    console.log(e);
+    incrementMoves();
+
+    if (openCardIndexes.length === 16) { // All cards opened - End Game
+
+    } else if (openCardIndexes.length % 2 === 0) { // First card not open yet
+        displayCard(e.target);
+        lastCardIndex = e.target.getAttribute('data-card-index');
+        openCardIndexes.push(lastCardIndex);
+        console.log(openCardIndexes);
+    } else if (openCardIndexes.length % 2 === 1) { // First card opened
+        currentCardIndex = e.target.getAttribute('data-card-index');
+        displayCard(e.target);
+        if (compareOpenCards(lastCardIndex, currentCardIndex)) { // Matched!
+            rightCards(lastCardIndex, currentCardIndex);
+            openCardIndexes.push(currentCardIndex);
+            console.log(openCardIndexes);
+        } else { // Not a Match
+            wrongCards(lastCardIndex, currentCardIndex);
+            openCardIndexes.pop();
+            console.log(openCardIndexes);
+        }
+    } else if (openCardIndexes.length < 16) { // More than 3 cards open
+        displayCard(e.target);
+        if (compareOpenCards(openCardIndexes[openCardIndexes.length - 1], e.target.getAttribute('data-card-index'))) { // Matched!
+            rightCards(lastCardIndex, currentCardIndex);
+            openCardIndexes.push(e.target.getAttribute('data-card-index'));
+            console.log(openCardIndexes);
+        } else { // Not a Match
+            wrongCards(lastCardIndex, currentCardIndex);
+            openCardIndexes.pop();
+            console.log(openCardIndexes);
+        }
+
+    }
+
+})
+
+// Restart Game
+document.querySelector('.restart').addEventListener('click', function(e) {
+    resetMoves();
+    loadNewGame();
+})
