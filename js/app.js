@@ -18,7 +18,9 @@ let lastCardIndex = null;
 let currentCardIndex = null;
 let moveCount = 0;
 let wrongMoves = 0;
+let currentTime = "00:00";
 let bestMoves = null;
+let bestTime = "";
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
@@ -33,6 +35,10 @@ function shuffle(array) {
     }
 
     return array;
+}
+
+function startTimer() {
+
 }
 
 // Create a new individual card (as a list item) with an i child element with the class name representing its image
@@ -118,6 +124,28 @@ function incrementMoves() {
     document.querySelector('.moves').innerHTML = moveCount;
 }
 
+// Update Star Rating depending on move limits set for 3, 2 & 1 stars
+function updateStarRating() {
+    let topStars = document.querySelector('.stars');
+    let scoreboardStars = document.querySelector('#star-rating');
+
+    if (moveCount > 15) { // minimum possible moves
+        if (moveCount < WRONG_MOVE_3_STAR_LIMIT) {
+            topStars.innerHTML = '<li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li>';
+            scoreboardStars.innerHTML = '<li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li>';
+        } else if (moveCount < WRONG_MOVE_2_STAR_LIMIT) {
+            topStars.innerHTML = '<li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li>';
+            scoreboardStars.innerHTML = '<li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li>';
+        } else if (moveCount < WRONG_MOVE_1_STAR_LIMIT) {
+            topStars.innerHTML = '<li><i class="fa fa-star"></i></li>';
+            scoreboardStars.innerHTML = '<li><i class="fa fa-star"></i></li>';
+        }
+    } else if (moveCount === 0) {
+        topStars.innerHTML = '<li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li>';
+        scoreboardStars.innerHTML = '<li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li>';
+    }
+}
+
 // Reset number of moves and all related variables
 function resetMoves() {
     moveCount = 0;
@@ -126,6 +154,7 @@ function resetMoves() {
     lastCardIndex = null;
     currentCardIndex = null;
     document.querySelector('.moves').innerHTML = moveCount;
+    updateStarRating();
 }
 
 // Check if two cards are matching
@@ -185,7 +214,7 @@ document.querySelector('.deck').addEventListener('click', function(e) {
     let clickedCardIndex = clickedCard.getAttribute('data-card-index');
 
     if ((clickedCard.nodeName === 'LI') && (openCardIndexes.length < 15)) { 
-        
+        updateStarRating();
         if (!isClickedCardAlreadyOpen(clickedCardIndex)) {
             incrementMoves();
             openCard(clickedCard, clickedCardIndex);    

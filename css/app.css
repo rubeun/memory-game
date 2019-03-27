@@ -119,6 +119,19 @@ h1 {
     color: lime;
 }
 
+.scoreboard #star-rating {
+    text-align: left;
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    margin: 0 5px 0 0;
+}
+
+.scoreboard #star-rating {
+    list-style: none;
+    display: inline-block;
+}
+
 .scoreboard .play-again {
     cursor: pointer;
     color: blue;
