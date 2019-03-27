@@ -1,13 +1,16 @@
 /*
- * Create a list that holds all of your cards.
- * Cards are represented by their font-awesome's classname for efficiency
- * Keep tabs of which cards have been opened
- * Counter for number of total moves and number of wrong moves
- */
-
+ * Constants for Max number of moves to retain 3, 2 or 1 stars
+*/
 const WRONG_MOVE_3_STAR_LIMIT = 26;
 const WRONG_MOVE_2_STAR_LIMIT = 34;
 const WRONG_MOVE_1_STAR_LIMIT = 42;
+
+/*
+ * Create a list that holds all of your cards.
+ * Cards are represented by their font-awesome's classname for efficiency
+ * Keep tabs of which cards have been opened
+ * Counter for number of total moves, number of wrong moves & best score
+ */
 
 let cardListArray = ['fa-anchor', 'fa-anchor', 'fa-bicycle', 'fa-bicycle', 'fa-bomb', 'fa-bomb', 'fa-bolt', 'fa-bolt', 'fa-cube', 'fa-cube', 'fa-diamond', 'fa-diamond', 'fa-leaf', 'fa-leaf', 'fa-paper-plane-o', 'fa-paper-plane-o'];
 let openCardIndexes = [];
@@ -16,13 +19,6 @@ let currentCardIndex = null;
 let moveCount = 0;
 let wrongMoves = 0;
 let bestMoves = null;
-
-/*
- * Display the cards on the page
- *   - shuffle the list of cards using the provided "shuffle" method below
- *   - loop through each card and create its HTML
- *   - add each card's HTML to the page
- */
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
@@ -59,26 +55,20 @@ function loadNewGame() {
     document.querySelector(".deck").setAttribute("style", "display: flex");
     document.querySelector(".scoreboard").setAttribute("style", "display: none");
 
-    // TESTING
-    //document.querySelector(".deck").setAttribute("style", "display: none");
-    //document.querySelector(".scoreboard").setAttribute("style", "display: block");
-
-
     let gameDeck = document.querySelector('.deck');
     gameDeck.innerHTML = ""; // reset to empty list again
-    const newCardListFragment = document.createDocumentFragment();  // create fragment
+    const newCardListFragment = document.createDocumentFragment();  // use fragment to optimise load
 
-    for (let i = 0; i < 16; i++) {
-        //let newCard = document.createElement('li'); // create a list item to be used as a new card
-        //newCard.classList.add(cardListArray[i]);    // add class name to it to determine its card image
-        let newCard = createCard(cardListArray[i], i);
-        newCardListFragment.appendChild(newCard);
+    for (let i = 0; i < 16; i++) { // populate all cards for board inside fragment
+        let newCard = createCard(cardListArray[i], i);  
+        newCardListFragment.appendChild(newCard);       
     }
 
-    gameDeck.appendChild(newCardListFragment);
+    gameDeck.appendChild(newCardListFragment); // add populated cards to deck
 
 }
 
+// Display card currently targeted
 function displayCard(cardTarget) {
     if (cardTarget.nodeName === 'LI') {
         cardTarget.classList.add('open');
@@ -86,6 +76,7 @@ function displayCard(cardTarget) {
     }
 }
 
+// Show that 2 cards are right and matching
 function rightCards(lastCardIndex, currentCardIndex) {
     let lastCard = document.querySelector('li[data-card-index="' + lastCardIndex + '"]');
     let currentCard = document.querySelector('li[data-card-index="' + currentCardIndex + '"]');
@@ -101,6 +92,7 @@ function rightCards(lastCardIndex, currentCardIndex) {
 
 }
 
+// Show that 2 cards are wrong and not matching
 function wrongCards(lastCardIndex, currentCardIndex) {
     let lastCard = document.querySelector('li[data-card-index="' + lastCardIndex + '"]');
     let currentCard = document.querySelector('li[data-card-index="' + currentCardIndex + '"]');
@@ -120,11 +112,13 @@ function wrongCards(lastCardIndex, currentCardIndex) {
 
 }
 
+// Increment number of moves made
 function incrementMoves() {
     moveCount++;
     document.querySelector('.moves').innerHTML = moveCount;
 }
 
+// Reset number of moves and all related variables
 function resetMoves() {
     moveCount = 0;
     wrongMoves = 0;
@@ -134,14 +128,17 @@ function resetMoves() {
     document.querySelector('.moves').innerHTML = moveCount;
 }
 
-function compareOpenCards(lastCardIndex, nextCardIndex) {
+// Check if two cards are matching
+function cardsAreMatching(lastCardIndex, nextCardIndex) {
     return cardListArray[lastCardIndex] === cardListArray[nextCardIndex] ? true : false; 
 }
 
+// Check if clicked card is already open
 function isClickedCardAlreadyOpen(clickedCardIndex) {
     return openCardIndexes.indexOf(clickedCardIndex) !== -1 ? true : false;
 }
 
+// Game has been Won. Hide deck and show score board
 function wonGame() {
     let gameDeck = document.querySelector('.deck');
     gameDeck.innerHTML = ""; // reset to empty list again
@@ -159,6 +156,7 @@ function wonGame() {
     document.querySelector('#best-moves').innerHTML = bestMoves;
 }
 
+// Open Card function
 function openCard(clickedCard, clickedCardIndex) {
     if (openCardIndexes.length % 2 === 0) { // Open First card
         displayCard(clickedCard);
@@ -167,7 +165,7 @@ function openCard(clickedCard, clickedCardIndex) {
     } else if (openCardIndexes.length % 2 === 1) { // Open Second Card
         currentCardIndex = clickedCardIndex;
         displayCard(clickedCard);
-        if (compareOpenCards(lastCardIndex, currentCardIndex)) { // Matched!
+        if (cardsAreMatching(lastCardIndex, currentCardIndex)) { // Matched!
             rightCards(lastCardIndex, currentCardIndex);
             openCardIndexes.push(currentCardIndex);
         } else { // Not a Match
@@ -177,7 +175,11 @@ function openCard(clickedCard, clickedCardIndex) {
     }     
 }
 
- // Card click listener
+/*
+ * Click Handers 
+*/
+
+ // Card click handler
 document.querySelector('.deck').addEventListener('click', function(e) {
     let clickedCard = e.target;
     let clickedCardIndex = clickedCard.getAttribute('data-card-index');
@@ -201,13 +203,13 @@ document.querySelector('.deck').addEventListener('click', function(e) {
     }
 })
 
-// Restart Game
+// Restart Game click handler
 document.querySelector('.restart').addEventListener('click', function(e) {
     resetMoves();
     loadNewGame();
 })
 
-// Play Again
+// Play Again click handler
 document.querySelector('.play-again').addEventListener('click', function(e) {
     resetMoves();
     loadNewGame();
