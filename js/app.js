@@ -168,34 +168,39 @@ function wonGame() {
     document.querySelector('#best-moves').innerHTML = bestMoves;
 }
 
+function openCard(clickedCard, clickedCardIndex) {
+    if (openCardIndexes.length % 2 === 0) { // Open First card
+        displayCard(clickedCard);
+        lastCardIndex = clickedCardIndex;
+        openCardIndexes.push(lastCardIndex);
+    } else if (openCardIndexes.length % 2 === 1) { // Open Second Card
+        currentCardIndex = clickedCardIndex;
+        displayCard(clickedCard);
+        if (compareOpenCards(lastCardIndex, currentCardIndex)) { // Matched!
+            rightCards(lastCardIndex, currentCardIndex);
+            openCardIndexes.push(currentCardIndex);
+        } else { // Not a Match
+            wrongCards(lastCardIndex, currentCardIndex);
+            openCardIndexes.pop();
+        }
+    }     
+}
+
  // Card click listener
 document.querySelector('.deck').addEventListener('click', function(e) {
+    let clickedCard = e.target;
+    let clickedCardIndex = clickedCard.getAttribute('data-card-index');
 
-    if ((e.target.nodeName === 'LI') && (openCardIndexes.length < 15)) {
+    if ((clickedCard.nodeName === 'LI') && (openCardIndexes.length < 15)) { 
         incrementMoves();
+        openCard(clickedCard, clickedCardIndex);
 
-        if (openCardIndexes.length === 16) { // All cards opened - End Game
-
-        } else if (openCardIndexes.length % 2 === 0) { // First card not open yet
-            displayCard(e.target);
-            lastCardIndex = e.target.getAttribute('data-card-index');
-            openCardIndexes.push(lastCardIndex);
-            console.log(openCardIndexes);
-        } else if (openCardIndexes.length % 2 === 1) { // First card opened
-            currentCardIndex = e.target.getAttribute('data-card-index');
-            displayCard(e.target);
-            if (compareOpenCards(lastCardIndex, currentCardIndex)) { // Matched!
-                rightCards(lastCardIndex, currentCardIndex);
-                openCardIndexes.push(currentCardIndex);
-                console.log(openCardIndexes);
-            } else { // Not a Match
-                wrongCards(lastCardIndex, currentCardIndex);
-                openCardIndexes.pop();
-                console.log(openCardIndexes);
-            }
-        } 
-    } else if ((e.target.nodeName === 'LI') && (openCardIndexes.length === 15)) {
-        wonGame();
+    } else if ((clickedCard.nodeName === 'LI') && (openCardIndexes.length === 15)) { // Last card & Game Win
+        incrementMoves();
+        displayCard(clickedCard);
+        setTimeout(function() {
+            wonGame();
+        }, 1000);
     }
 })
 
