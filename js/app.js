@@ -18,9 +18,11 @@ let lastCardIndex = null;
 let currentCardIndex = null;
 let moveCount = 0;
 let wrongMoves = 0;
-let currentTime = "00:00";
+let currentTimeSeconds = 0;
+let currentTimeReadable = "00:00";
+let currentTimerRef = null;
 let bestMoves = null;
-let bestTime = "";
+let bestTimeSeconds = null;
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
@@ -37,8 +39,71 @@ function shuffle(array) {
     return array;
 }
 
-function startTimer() {
+// Convert time in seconds to a readable format
+function timeConverter(totalSeconds) {
+    var readableTime;
+    var minutes;
+    var seconds;
+    
+    if (totalSeconds >= 60) {
+      minutes = Math.floor(totalSeconds / 60);
+      seconds = Math.round(totalSeconds % 60);
+    } else {
+      minutes = 0;
+      seconds = totalSeconds;
+    }
+    
+    if (minutes >= 10 && seconds >= 10) {
+      readableTime = minutes.toString() + ":" + seconds.toString();
+    } else if (minutes >= 10 && seconds < 10) {
+      readableTime = minutes.toString() + ":0" + seconds.toString();    
+    } else if (minutes < 10 && seconds >= 10) {
+      readableTime = "0" + minutes.toString() + ":" + seconds.toString();    
+    } else if (minutes < 10 && seconds < 10) {
+      readableTime = "0" + minutes.toString() + ":0" + seconds.toString();
+    }
+    
+    return readableTime;
+}
 
+// Game Timer Start. Updates timer on score board starting from 0
+function startTimer() {
+    currentTimeSeconds = 0;
+    currentTimeReadable = "00:00";
+    document.querySelector('.game-timer').innerHTML = currentTimeReadable;
+
+    let timer = setInterval(function(){
+        currentTimeSeconds++;
+        currentTimeReadable = timeConverter(currentTimeSeconds);
+        document.querySelector('.game-timer').innerHTML = currentTimeReadable;
+    }, 1000);
+
+    return timer;
+}
+
+// Game Timer Stop. Updates timer on score boards. Checks and replaces best times if needed.
+function stopTimer(timer) {
+
+    document.querySelector('#time-taken').innerHTML = currentTimeReadable;
+    // if currentTime < bestTime, replace bestTime
+    if (bestTimeSeconds !== null) {
+        if (bestTimeSeconds > currentTimeSeconds) {
+            bestTimeSeconds = currentTimeSeconds;            
+            document.querySelector('#best-time').innerHTML = currentTimeReadable;
+            console.log("New Best Time - bestTimeSeconds", bestTimeSeconds);
+            console.log("New Best Time - currentTimeSeconds", currentTimeSeconds);
+                }
+    } else {
+        // first time running, set current time as best time
+        bestTimeSeconds = currentTimeSeconds;            
+        document.querySelector('#best-time').innerHTML = currentTimeReadable;
+        console.log("First Time - bestTimeSeconds", bestTimeSeconds);
+        console.log("First Time - currentTimeSeconds", currentTimeSeconds);
+        }
+
+
+    // Reset
+    clearInterval(timer);
 }
 
 // Create a new individual card (as a list item) with an i child element with the class name representing its image
@@ -58,6 +123,10 @@ function createCard(className, cardIndex) {
 function loadNewGame() {
     shuffle(cardListArray);  // shuffle the cards
     
+    updateStarRating(); // reset stars
+    currentTimerRef = startTimer(); // start game timer
+
+    // show game deck and hide scoreboard
     document.querySelector(".deck").setAttribute("style", "display: flex");
     document.querySelector(".scoreboard").setAttribute("style", "display: none");
 
@@ -167,10 +236,12 @@ function isClickedCardAlreadyOpen(clickedCardIndex) {
     return openCardIndexes.indexOf(clickedCardIndex) !== -1 ? true : false;
 }
 
-// Game has been Won. Hide deck and show score board
+// Game has been Won. Hide deck and show score board. Update bestMoves if necessary
 function wonGame() {
     let gameDeck = document.querySelector('.deck');
     gameDeck.innerHTML = ""; // reset to empty list again
+
+    stopTimer(currentTimerRef);
 
     document.querySelector(".deck").setAttribute("style", "display: none");
     document.querySelector(".scoreboard").setAttribute("style", "display: block");
@@ -212,7 +283,7 @@ function openCard(clickedCard, clickedCardIndex) {
 document.querySelector('.deck').addEventListener('click', function(e) {
     let clickedCard = e.target;
     let clickedCardIndex = clickedCard.getAttribute('data-card-index');
-
+    
     if ((clickedCard.nodeName === 'LI') && (openCardIndexes.length < 15)) { 
         updateStarRating();
         if (!isClickedCardAlreadyOpen(clickedCardIndex)) {

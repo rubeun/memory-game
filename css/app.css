@@ -114,12 +114,15 @@ h1 {
 }
 
 .scoreboard #total-moves,
-.scoreboard #best-moves {
+.scoreboard #time-taken,
+.scoreboard #best-moves,
+.scoreboard #best-time {
     padding-left: 10px;
     color: lime;
 }
 
 .scoreboard #star-rating {
+    color: lime;
     text-align: left;
     margin: 0;
     padding: 0;
@@ -134,7 +137,11 @@ h1 {
 
 .scoreboard .play-again {
     cursor: pointer;
-    color: blue;
+    animation-duration: 1s;
+    animation-name: pulse;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-timing-function: ease-in-out;
 }
 
 .scoreboard .play-again:hover {
@@ -154,6 +161,15 @@ h1 {
     80% { transform: translate(-1px, -1px) rotate(1deg); }
     90% { transform: translate(1px, 2px) rotate(0deg); }
     100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+@keyframes pulse {
+    from {
+        color: rgb(0, 47, 255);
+    }
+    to {
+        color: rgb(72, 166, 253);
+    }
 }
 
 /*
@@ -176,6 +192,10 @@ h1 {
 .score-panel .stars li {
     list-style: none;
     display: inline-block;
+}
+
+.score-panel .game-timer {
+    padding-left: 38px;
 }
 
 .score-panel .restart {
