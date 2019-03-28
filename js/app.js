@@ -1,9 +1,9 @@
 /*
  * Constants for Max number of moves to retain 3, 2 or 1 stars
 */
-const WRONG_MOVE_3_STAR_LIMIT = 26;
-const WRONG_MOVE_2_STAR_LIMIT = 34;
-const WRONG_MOVE_1_STAR_LIMIT = 42;
+const WRONG_MOVE_3_STAR_LIMIT = 32;
+const WRONG_MOVE_2_STAR_LIMIT = 48;
+const WRONG_MOVE_1_STAR_LIMIT = 64;
 
 /*
  * Create a list that holds all of your cards.
@@ -203,18 +203,18 @@ function updateStarRating() {
 
     if (moveCount > 15) { // minimum possible moves
         if (moveCount < WRONG_MOVE_3_STAR_LIMIT) {
-            topStars.innerHTML = '<li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li>';
-            scoreboardStars.innerHTML = '<li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li>';
+            topStars.innerHTML = '<i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>';
+            scoreboardStars.innerHTML = '<i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>';
         } else if (moveCount < WRONG_MOVE_2_STAR_LIMIT) {
-            topStars.innerHTML = '<li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li>';
-            scoreboardStars.innerHTML = '<li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li>';
+            topStars.innerHTML = '<i class="fa fa-star"></i><i class="fa fa-star"></i>';
+            scoreboardStars.innerHTML = '<i class="fa fa-star"></i><i class="fa fa-star"></i>';
         } else if (moveCount < WRONG_MOVE_1_STAR_LIMIT) {
-            topStars.innerHTML = '<li><i class="fa fa-star"></i></li>';
-            scoreboardStars.innerHTML = '<li><i class="fa fa-star"></i></li>';
+            topStars.innerHTML = '<i class="fa fa-star"></i>';
+            scoreboardStars.innerHTML = '<i class="fa fa-star"></i>';
         }
     } else if (moveCount === 0) {
-        topStars.innerHTML = '<li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li>';
-        scoreboardStars.innerHTML = '<li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li>';
+        topStars.innerHTML = '<i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>';
+        scoreboardStars.innerHTML = '<i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>';
     }
 }
 

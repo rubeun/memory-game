@@ -131,7 +131,7 @@ h1 {
 }
 
 .scoreboard #star-rating {
-    list-style: none;
+    padding-left: 10px;
     display: inline-block;
 }
 
@@ -190,7 +190,6 @@ h1 {
 }
 
 .score-panel .stars li {
-    list-style: none;
     display: inline-block;
 }
 
