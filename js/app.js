@@ -20,7 +20,7 @@ let moveCount = 0;
 let wrongMoves = 0;
 let currentTimeSeconds = 0;
 let currentTimeReadable = "00:00";
-let currentTimerRef = null;
+let currentTimerRef = false;
 let bestMoves = null;
 let bestTimeSeconds = null;
 
@@ -68,9 +68,6 @@ function timeConverter(totalSeconds) {
 
 // Game Timer Start. Updates timer on score board starting from 0
 function startTimer() {
-    currentTimeSeconds = 0;
-    currentTimeReadable = "00:00";
-    document.querySelector('.game-timer').innerHTML = currentTimeReadable;
 
     let timer = setInterval(function(){
         currentTimeSeconds++;
@@ -82,7 +79,7 @@ function startTimer() {
 }
 
 // Game Timer Stop. Updates timer on score boards. Checks and replaces best times if needed.
-function stopTimer(timer) {
+function stopTimer() {
 
     document.querySelector('#time-taken').innerHTML = currentTimeReadable;
     // if currentTime < bestTime, replace bestTime
@@ -103,7 +100,14 @@ function stopTimer(timer) {
 
 
     // Reset
-    clearInterval(timer);
+    clearInterval(currentTimerRef);
+    currentTimerRef = false; // set to false so we know timer is not running
+}
+
+function resetTimer() {
+    currentTimeSeconds = 0;
+    currentTimeReadable = "00:00";
+    document.querySelector('.game-timer').innerHTML = currentTimeReadable;
 }
 
 // Create a new individual card (as a list item) with an i child element with the class name representing its image
@@ -124,7 +128,6 @@ function loadNewGame() {
     shuffle(cardListArray);  // shuffle the cards
     
     updateStarRating(); // reset stars
-    currentTimerRef = startTimer(); // start game timer
 
     // show game deck and hide scoreboard
     document.querySelector(".deck").setAttribute("style", "display: flex");
@@ -241,7 +244,7 @@ function wonGame() {
     let gameDeck = document.querySelector('.deck');
     gameDeck.innerHTML = ""; // reset to empty list again
 
-    stopTimer(currentTimerRef);
+    stopTimer();
 
     document.querySelector(".deck").setAttribute("style", "display: none");
     document.querySelector(".scoreboard").setAttribute("style", "display: block");
@@ -284,8 +287,14 @@ document.querySelector('.deck').addEventListener('click', function(e) {
     let clickedCard = e.target;
     let clickedCardIndex = clickedCard.getAttribute('data-card-index');
     
+    // Make sure a card is clicked and its not the last card
     if ((clickedCard.nodeName === 'LI') && (openCardIndexes.length < 15)) { 
         updateStarRating();
+
+        if (!currentTimerRef) {
+            currentTimerRef = startTimer(); // start game timer if not already running
+        }
+
         if (!isClickedCardAlreadyOpen(clickedCardIndex)) {
             incrementMoves();
             openCard(clickedCard, clickedCardIndex);    
@@ -305,12 +314,14 @@ document.querySelector('.deck').addEventListener('click', function(e) {
 
 // Restart Game click handler
 document.querySelector('.restart').addEventListener('click', function(e) {
+    resetTimer();
     resetMoves();
     loadNewGame();
 })
 
 // Play Again click handler
 document.querySelector('.play-again').addEventListener('click', function(e) {
+    resetTimer();
     resetMoves();
     loadNewGame();
 })
