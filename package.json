@@ -1,0 +1,25 @@
+{
+  "name": "memory-game",
+  "version": "1.0.0",
+  "description": "Rubeun's Memory Game",
+  "main": "js/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rubeun/memory-game.git"
+  },
+  "author": "Rubeun Tan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rubeun/memory-game/issues"
+  },
+  "homepage": "https://github.com/rubeun/memory-game#readme",
+  "devDependencies": {
+    "gulp": "^4.0.0"
+  },
+  "dependencies": {
+    "gulp-sass": "^4.0.2"
+  }
+}
