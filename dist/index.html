@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Rubeun's Memory Game</title>
+    <meta name="description" content="">
+    <link rel="stylesheet prefetch" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+    <link rel="stylesheet prefetch" href="https://fonts.googleapis.com/css?family=Coda">
+    <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Rubeun's Memory Game</h1>
+        </header>
+
+        <section class="score-panel">
+        	<span class="stars">
+        	</span>
+
+        	<span class="moves">0</span> Moves
+
+            <span class="game-timer"></span>
+
+            <div class="restart">
+        		<i class="fa fa-repeat"></i>
+        	</div>
+        </section>
+
+        <ul class="deck">
+        </ul>
+
+        <div class="scoreboard">
+            <h2>You Won!</h2>
+            <p>Total Moves: <span id="total-moves">0</span></p>
+            <p>Time Taken: <span id="time-taken"></span></p>
+            <p>Best Moves: <span id="best-moves">0</span></p>
+            <p>Best Time: <span id="best-time"></span></p>
+            <p>Star Rating: <span id="star-rating"></span></p>
+
+            <p class="play-again">Play Again?</p>
+        </div>
+
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
