@@ -17,7 +17,6 @@ let openCardIndexes = [];
 let lastCardIndex = null;
 let currentCardIndex = null;
 let moveCount = 0;
-let wrongMoves = 0;
 let currentTimeSeconds = 0;
 let currentTimeReadable = "00:00";
 let currentTimerRef = false;
@@ -87,15 +86,15 @@ function stopTimer() {
         if (bestTimeSeconds > currentTimeSeconds) {
             bestTimeSeconds = currentTimeSeconds;            
             document.querySelector('#best-time').innerHTML = currentTimeReadable;
-            console.log("New Best Time - bestTimeSeconds", bestTimeSeconds);
-            console.log("New Best Time - currentTimeSeconds", currentTimeSeconds);
+            // console.log("New Best Time - bestTimeSeconds", bestTimeSeconds);
+            // console.log("New Best Time - currentTimeSeconds", currentTimeSeconds);
                 }
     } else {
         // first time running, set current time as best time
         bestTimeSeconds = currentTimeSeconds;            
         document.querySelector('#best-time').innerHTML = currentTimeReadable;
-        console.log("First Time - bestTimeSeconds", bestTimeSeconds);
-        console.log("First Time - currentTimeSeconds", currentTimeSeconds);
+        // console.log("First Time - bestTimeSeconds", bestTimeSeconds);
+        // console.log("First Time - currentTimeSeconds", currentTimeSeconds);
         }
 
 
@@ -221,7 +220,6 @@ function updateStarRating() {
 // Reset number of moves and all related variables
 function resetMoves() {
     moveCount = 0;
-    wrongMoves = 0;
     openCardIndexes = [];
     lastCardIndex = null;
     currentCardIndex = null;
@@ -313,14 +311,14 @@ document.querySelector('.deck').addEventListener('click', function(e) {
 })
 
 // Restart Game click handler
-document.querySelector('.restart').addEventListener('click', function(e) {
+document.querySelector('.restart').addEventListener('click', function() {
     resetTimer();
     resetMoves();
     loadNewGame();
 })
 
 // Play Again click handler
-document.querySelector('.play-again').addEventListener('click', function(e) {
+document.querySelector('.play-again').addEventListener('click', function() {
     resetTimer();
     resetMoves();
     loadNewGame();
